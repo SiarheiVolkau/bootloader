@@ -25,5 +25,5 @@ $(LOCALTARGET):$(OBJS)
 
 # clean rules
 clean:
-	-rm $(OBJS) $(LOCALTARGET) $($(LOCALTARGET):%.$(OUT_EXT)=%.map) $(TMPTARGET) $(TARGET)
+	-rm $(OBJS) $(LOCALTARGET) $(LOCALTARGET:%.$(OUT_EXT)=%.map) $(TMPTARGET) $(TARGET)
 
