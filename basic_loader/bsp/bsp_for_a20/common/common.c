@@ -303,7 +303,11 @@ __u32 get_cyclecount (void)
 {
 	__u32 value;
 	// Read CCNT Register
+#ifdef __GNUC__
+	asm volatile("MRC p15, 0, %0, c9, c13, 0" : "=r" (value) : );
+#else
 	__asm{MRC p15, 0, value, c9, c13, 0}
+#endif
 	return value;
 }
 
@@ -324,6 +328,20 @@ void init_perfcounters (__u32 do_reset, __u32 enable_divider)
 
 	value |= 16;
 
+#ifdef __GNUC__
+
+	// program the performance-counter control-register:
+	asm volatile("MCR p15, 0, %0, c9, c12, 0" : : "r" (value));
+
+	// enable all counters:
+	value = 0x8000000f;
+	asm volatile("MCR p15, 0, %0, c9, c12, 1" : : "r" (value));
+
+	// clear overflows:
+	asm volatile("MCR p15, 0, %0, c9, c12, 3" : : "r" (value));
+
+#else
+
 	// program the performance-counter control-register:
 	__asm {MCR p15, 0, value, c9, c12, 0}
 
@@ -333,6 +351,8 @@ void init_perfcounters (__u32 do_reset, __u32 enable_divider)
 
 	// clear overflows:
 	__asm {MCR p15, 0, value, c9, c12, 3}
+
+#endif
 
 	return;
 }
@@ -412,6 +432,44 @@ void delay_us(__u32 us)
 }
 
 
+#ifdef __GNUC__
+void __attribute__((naked))
+cpuX_startup_to_wfi(void)
+{
+	__asm__("mrs r0, cpsr\n");
+	__asm__("bic r0, r0, %0\n" :  : "I" (ARMV7_MODE_MASK));
+	__asm__("orr r0, r0, %0\n" :  : "I" (ARMV7_SVC_MODE));
+	// After reset, ARM automaticly disables IRQ and FIQ, and runs in SVC mode.
+	__asm__("orr r0, r0, %0\n" :  : "I" (ARMV7_IRQ_MASK|ARMV7_FIQ_MASK));
+	__asm__("bic r0, r0, %0\n" :  : "I" (ARMV7_CC_E_BIT)); // set little-endian
+	__asm__("msr cpsr_c, r0\n");
+
+    // configure memory system : disable MMU,cache and write buffer; set little_endian;
+    __asm__("mrc p15, 0, r0, c1, c0\n");
+    __asm__("bic r0, r0, %0\n" :  : "I" (ARMV7_C1_M_BIT|ARMV7_C1_C_BIT));// disable MMU, data cache
+    __asm__("bic r0, r0, %0\n" :  : "I" (ARMV7_C1_I_BIT|ARMV7_C1_Z_BIT));// disable instruction cache, disable flow prediction
+    __asm__("bic r0, r0, %0\n" :  : "I" (ARMV7_C1_A_BIT));               // disable align
+    __asm__("mcr p15, 0, r0, c1, c0\n");
+    // set SP for SVC mode
+    __asm__("mrs r0, cpsr\n");
+    __asm__("bic r0, r0, %0\n" :  : "I" (ARMV7_MODE_MASK));
+    __asm__("orr r0, r0, %0\n" :  : "I" (ARMV7_SVC_MODE));
+    __asm__("msr cpsr_c, r0\n");
+    __asm__("ldr sp, =0xb400\n");
+
+    //let the cpu1+ enter wfi state;
+    /* step3: execute a CLREX instruction */
+    __asm__("clrex\n");
+    /* step5: execute an ISB instruction */
+    __asm__("isb sy\n");
+    /* step6: execute a DSB instruction  */
+    __asm__("dsb sy\n");
+    /* step7: execute a WFI instruction */
+    __asm__("wfi\n");
+    /* step8:wait here */
+    __asm__("b .\n");
+}
+#else
 __asm void cpuX_startup_to_wfi(void)
 {
 
@@ -427,7 +485,7 @@ __asm void cpuX_startup_to_wfi(void)
     bic r0, r0, #( ARMV7_C1_M_BIT | ARMV7_C1_C_BIT )// disable MMU, data cache
     bic r0, r0, #( ARMV7_C1_I_BIT | ARMV7_C1_Z_BIT )// disable instruction cache, disable flow prediction
     bic r0, r0, #( ARMV7_C1_A_BIT)                  // disable align
-    mcr p15, 0, r0, c1, c0                          
+    mcr p15, 0, r0, c1, c0
     // set SP for SVC mode
     mrs r0, cpsr
     bic r0, r0, #ARMV7_MODE_MASK
@@ -447,6 +505,7 @@ __asm void cpuX_startup_to_wfi(void)
     /* step8:wait here */
     b .
 }
+#endif
 
 #define SW_PA_CPUCFG_IO_BASE              0x01c25c00
 /*
@@ -525,7 +584,7 @@ void close_cpuX(__u32 cpu)
     pwr_reg = readl(IO_ADDRESS(SW_PA_CPUCFG_IO_BASE) + AW_CPU1_PWROFF_REG);
     pwr_reg |= 1;
     writel(pwr_reg, IO_ADDRESS(SW_PA_CPUCFG_IO_BASE) + AW_CPU1_PWROFF_REG);
-   
+
 }
 
 void reset_cpux(unsigned int cpu)

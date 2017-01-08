@@ -93,8 +93,8 @@ void mmu_system_init(__u32 dram_base, __u32 dram_size, __u32 mmu_base)
 	mmu_flush_TLB();
 	//set ttb
 #ifdef __GNUC__
-	asm volatile("mcr p15, 0, %0, c2, c0, 0" : : "r" (mmu_base));
-	asm volatile("mcr p15, 0, %0, c2, c0, 1" : : "r" (mmu_base));
+	__asm__("mcr p15, 0, %0, c2, c0, 0" : : "r" (mmu_base));
+	__asm__("mcr p15, 0, %0, c2, c0, 1" : : "r" (mmu_base));
 #else // RVDS
 	__asm{mcr p15, 0, mmu_base, c2, c0, 0}
 	__asm{mcr p15, 0, mmu_base, c2, c0, 1}
@@ -115,7 +115,7 @@ void   mmu_enable( void )
 	__u32 c1format = 0;
 
 #ifdef __GNUC__
-	asm volatile("mrc p15, 0, %0, c1, c0, 0" : : "r" (c1format));
+	__asm__("mrc p15, 0, %0, c1, c0, 0" : "=r" (c1format));
 #else // RVDS
 	__asm{MRC p15,0,c1format,c1,c0,0}
 #endif
@@ -124,7 +124,7 @@ void   mmu_enable( void )
 	c1format |= 0x1001;				//´ò¿ªICACHE£¬MMU£¬DISABLE ALIGIN CHECK
 
 #ifdef __GNUC__
-	asm volatile("mcr p15, 0, %0, c1, c0, 0" : : "r" (c1format));
+	__asm__("mcr p15, 0, %0, c1, c0, 0" : : "r" (c1format));
 #else // RVDS
 	__asm{MCR p15,0,c1format,c1,c0,0}
 #endif
@@ -137,7 +137,7 @@ void   mmu_disable( void )
 	__u32 c1format = 0;
 
 #ifdef __GNUC__
-	asm volatile("mrc p15, 0, %0, c1, c0, 0" : : "r" (c1format));
+	__asm__("mrc p15, 0, %0, c1, c0, 0" : "=r" (c1format));
 #else // RVDS
 	__asm{MRC p15,0,c1format,c1,c0,0}
 #endif
@@ -146,7 +146,7 @@ void   mmu_disable( void )
 	c1format |= 0;
 
 #ifdef __GNUC__
-	asm volatile("mcr p15, 0, %0, c1, c0, 0" : : "r" (c1format));
+	__asm__("mcr p15, 0, %0, c1, c0, 0" : : "r" (c1format));
 #else // RVDS
 	__asm{MCR p15,0,c1format,c1,c0,0}
 #endif

@@ -4,11 +4,24 @@ ARCH     = sun7i
 ARM_CROSS_TOOL = ARMCC_CROSSTOOL
 export
 
-all:
-	make -f make_nand  clean;make -f make_nand
-	make -f make_sdmmc clean;make -f make_sdmmc
-#	make -f make_spinor clean;make -f make_spinor
+all: nand sdmmc #spinor
 
-clean:
-	make -f make_nand    	clean
-	make -f make_sdmmc		clean
+nand: nand_clean
+	make -f make_nand nand
+
+sdmmc: sdmmc_clean
+	make -f make_sdmmc sdmmc
+
+#spinor: spinor_clean
+#	make -f make_spinor spinor
+
+clean: nand_clean sdmmc_clean #spinor_clean
+
+nand_clean:
+	make -f make_nand clean
+
+sdmmc_clean:
+	make -f make_sdmmc clean
+
+#spinor_clean:
+#	make -f make_spinor clean

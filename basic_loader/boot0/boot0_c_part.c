@@ -225,7 +225,7 @@ __attribute__ ((section(".bt0_start")))
 void __attribute__ ((naked)) __attribute__ ((noreturn))
 _start()
 {
-	asm volatile ("bl initialize");
+	__asm__ ("bl initialize");
 }
 #endif
 
