@@ -195,19 +195,38 @@ static void print_version(void)
 *
 ************************************************************************************************************
 */
+#ifdef __GNUC__
+	extern unsigned long _bss;
+	extern unsigned long _ebss;
+#else
+	extern unsigned char Image$$Boot0_RW_ZI$$ZI$$Base;
+	extern unsigned char Image$$Boot0_RW_ZI$$ZI$$Length;
+#endif
+
 static void clear_ZI( void )
 {
 	__u32 *p32;
 	__u32 size;
 
-	extern unsigned char Image$$Boot0_RW_ZI$$ZI$$Base;
-	extern unsigned char Image$$Boot0_RW_ZI$$ZI$$Length;
-
+#ifdef __GNUC__
+	p32  = (__u32 *)&_bss;
+	size = ((__u32)&_ebss - (__u32)&_bss);
+#else
 	size = (__u32)  &Image$$Boot0_RW_ZI$$ZI$$Length;
 	p32  = (__u32 *)&Image$$Boot0_RW_ZI$$ZI$$Base;
+#endif
 
 	memset(p32, 0, size);
 
 }
+
+#ifdef __GNUC__
+__attribute__ ((section(".bt0_start")))
+void __attribute__ ((naked)) __attribute__ ((noreturn))
+_start()
+{
+	asm volatile ("bl initialize");
+}
+#endif
 
 

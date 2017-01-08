@@ -22,10 +22,10 @@
  * MA 02111-1307 USA
  */
 
-#include "..\lib_i.h"
+#include "../lib_i.h"
 #include "string.h"
-#include "..\..\load_Boot1_from_nand\nand_for_boot.h"
-#include "..\..\Load_boot1_from_sdmmc\Bsp_mmc_for_boot\mmc.h"
+#include "../../load_boot1_from_nand/nand_for_boot.h"
+#include "../../load_boot1_from_sdmmc/bsp_mmc_for_boot/mmc.h"
 
 
 extern const boot0_file_head_t  BT0_head;

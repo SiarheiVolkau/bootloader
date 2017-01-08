@@ -22,7 +22,7 @@
  * MA 02111-1307 USA
  */
 
-#include "load_Boot1_from_nand_i.h"
+#include "load_boot1_from_nand_i.h"
 #include "spare_head.h"
 
 /*******************************************************************************

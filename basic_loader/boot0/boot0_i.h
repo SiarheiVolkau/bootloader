@@ -31,7 +31,7 @@
 #include "drv/boot0_drv.h"
 #include "sys_op/sys_op.h"
 #include "lib/lib.h"
-#include "load_Boot1_from_nand/load_Boot1_from_nand.h"
+#include "load_boot1_from_nand/load_boot1_from_nand.h"
 #include "load_boot1_from_sdmmc/load_boot1_from_sdmmc.h"
 
 extern const boot0_file_head_t  BT0_head;
