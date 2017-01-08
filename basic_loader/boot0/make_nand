@@ -5,14 +5,14 @@ STORAGE_MEDIA_TYPE = STORAGE_NAND
 include make.cfg
 
 ifeq ($(CROSSTOOL), ARMGCC)
-DUMPCMD = $(DUMP) $(DUMPFLAGS) $(LOCALTARGET) $(TMPTARGET)
+BINCMD = $(ELF2BIN) $(ELF2BINFLAGS) $(LOCALTARGET) $(TMPTARGET)
 else
-DUMPCMD = $(DUMP) $(DUMPFLAGS) $(TMPTARGET) $(LOCALTARGET)
+BINCMD = $(ELF2BIN) $(ELF2BINFLAGS) $(TMPTARGET) $(LOCALTARGET)
 endif
 
 # target build rules
 nand:$(LOCALTARGET)
-	$(DUMPCMD)
+	$(BINCMD)
 	-$(WORKTOOLS)/pack/pctools/linux/gen_check_code.exe $(TMPTARGET) $(TARGET)
 	@echo ----------------------------
 	@echo target make finish
