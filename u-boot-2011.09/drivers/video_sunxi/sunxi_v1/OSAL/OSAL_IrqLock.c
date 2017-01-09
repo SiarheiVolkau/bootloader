@@ -19,7 +19,7 @@
 *************************************************************************************
 */
 #include "OSAL.h"
-/*
+
 void OSAL_IrqLock(__u32 *cpu_sr)
 {
     //local_irq_save(*cpu_sr);
@@ -35,6 +35,6 @@ void OSAL_IrqUnLock(__u32 cpu_sr)
     //unsigned long flags = cpu_sr;
     //local_irq_restore(flags);
 }
-*/
+
 
 

@@ -348,7 +348,7 @@ endif
 else
 PLATFORM_LIBGCC = -L $(shell dirname `$(CC) $(CFLAGS) -print-libgcc-file-name`) -lgcc
 endif
-ifndef CONFIG_SUNXI_SECURE_SYSTEM
+ifdef CONFIG_SUNXI_SECURE_SYSTEM
 PLATFORM_LIBS += -L./openssl -lssl -lcrypto $(PLATFORM_LIBGCC)
 else
 PLATFORM_LIBS += $(PLATFORM_LIBGCC)

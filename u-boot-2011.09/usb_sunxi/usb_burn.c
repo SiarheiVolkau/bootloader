@@ -1075,7 +1075,7 @@ static int sunxi_pburn_state_loop(void  *buffer)
 						case 1:				//小机端接收数据
 						{
 							//pburn_flash_sectors  = *(int *)(cbw->CBWCDB + 8);
-							pburn_flash_start    = *(int *)(cbw->CBWCDB + 4);
+							memcpy(&pburn_flash_start, cbw->CBWCDB + 4, sizeof(pburn_flash_start));
 
 							trans_data.recv_size = cbw->dCBWDataTransferLength;
 							trans_data.act_recv_buffer = (uint)trans_data.base_recv_buffer;
@@ -1092,8 +1092,8 @@ static int sunxi_pburn_state_loop(void  *buffer)
 						{
 							uint start, sectors;
 
-							start   = *(int *)(cbw->CBWCDB + 4);		//读数据的偏移量
-							sectors = *(int *)(cbw->CBWCDB + 8);		//扇区数;
+							memcpy(&start, cbw->CBWCDB + 4, sizeof(start));		//读数据的偏移量
+							memcpy(&sectors, cbw->CBWCDB + 8, sizeof(sectors));		//扇区数;
 
 							printf("start=%d, sectors=%d\n", start, sectors);
 
