@@ -36,7 +36,7 @@
 #define STAMP_VALUE             0x5F0A6C39
 #define ALIGN_SIZE				8 * 1024
 
-#define BOOT1_START_SECTOR_IN_SDMMC    38192
+#define BOOT1_START_SECTOR_IN_SDMMC    40
 /******************************************************************************/
 /*               the control information stored in file head                  */
 /******************************************************************************/
